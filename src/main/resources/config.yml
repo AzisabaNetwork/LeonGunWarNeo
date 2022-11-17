@@ -1,0 +1,12 @@
+redis:
+  hostname: redis
+  port: 6379
+  username: default
+  password: password
+mysql:
+  hostname: mariadb
+  port: 3306
+  username: lgwneo
+  password: password
+  database: lgwneo
+server-name: lgw-sv1
