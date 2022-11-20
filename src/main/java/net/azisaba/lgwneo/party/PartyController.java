@@ -14,6 +14,8 @@ public class PartyController {
   private final HashMap<UUID, Party> partyMap = new HashMap<>();
 
   public Party getPartyOf(UUID uuid) {
+    // TODO: ローカルにデータが存在しない場合、Redisから取ってくる
+
     Party party = partyMap.getOrDefault(uuid, null);
     if (party == null) {
       party = new Party(uuid);

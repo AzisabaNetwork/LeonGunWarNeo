@@ -255,8 +255,12 @@ public class LeaderDeathMatch implements Match {
 
   @Override
   public Set<Player> getParticipatePlayers() {
-    // teamPlayerMapから全てのプレイヤーを取得する
-    return teamPlayerMap.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
+    if (!teamPlayerMap.isEmpty()) {
+      // teamPlayerMapから全てのプレイヤーを取得する
+      return teamPlayerMap.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
+    }
+    return getQueueingParties().stream().map(Party::getMemberUuidSet).flatMap(Set::stream)
+        .map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toSet());
   }
 
   /**
@@ -331,6 +335,23 @@ public class LeaderDeathMatch implements Match {
   @Override
   public boolean removePartyFromQueue(Party party) {
     return queueingParties.remove(party);
+  }
+
+  @Override
+  public boolean setupPartyPlayer(Player p) {
+    if (getQueueingParties().stream().map(Party::getMemberUuidSet).flatMap(Set::stream)
+        .noneMatch(uuid -> uuid.equals(p.getUniqueId()))) {
+      return false;
+    }
+
+    // TODO: 試合が開始した後に参加してきた場合の処理
+
+    p.teleport(mapData.getQueueSpawn());
+    p.setGameMode(GameMode.SURVIVAL);
+    p.setHealth(20);
+    p.setFoodLevel(25);
+
+    return true;
   }
 
   @Override

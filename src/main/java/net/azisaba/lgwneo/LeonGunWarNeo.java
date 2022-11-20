@@ -24,6 +24,9 @@ import net.azisaba.lgwneo.redis.MatchDataUpdater;
 import net.azisaba.lgwneo.redis.ProxyRegisteredServerNameFetcher;
 import net.azisaba.lgwneo.redis.ServerIdDefiner;
 import net.azisaba.lgwneo.redis.data.RedisConnectionData;
+import net.azisaba.lgwneo.redis.data.RedisKeys;
+import net.azisaba.lgwneo.redis.pubsub.MatchJoinRequestSubscriber;
+import net.azisaba.lgwneo.redis.pubsub.PubSubHandler;
 import net.azisaba.lgwneo.sql.MySQLConnector;
 import net.azisaba.lgwneo.taskchain.BukkitTaskChainFactory;
 import net.azisaba.lgwneo.util.Chat;
@@ -44,6 +47,7 @@ public class LeonGunWarNeo extends JavaPlugin {
   private ServerIdDefiner serverIdDefiner;
   private LobbyServerNameFetcher lobbyServerNameFetcher;
   private ProxyRegisteredServerNameFetcher proxyRegisteredServerNameFetcher;
+  private PubSubHandler pubSubHandler;
   private MatchMapLoader matchMapLoader;
   private MatchOrganizer matchOrganizer;
   private MatchFactory matchFactory;
@@ -92,6 +96,10 @@ public class LeonGunWarNeo extends JavaPlugin {
     matchFactory = new MatchFactory(this, jedisPool);
     matchDataUpdater = new MatchDataUpdater(this, jedisPool, matchOrganizer);
     matchDataUpdater.runUpdateTask();
+
+    pubSubHandler = new PubSubHandler(jedisPool);
+    pubSubHandler.startSubscribe(new MatchJoinRequestSubscriber(this),
+        RedisKeys.MATCH_JOIN_REQUEST_PREFIX + "request");
 
     SlimePlugin slimePlugin =
         (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");

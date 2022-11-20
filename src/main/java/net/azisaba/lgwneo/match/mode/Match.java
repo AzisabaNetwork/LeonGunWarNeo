@@ -61,7 +61,7 @@ public interface Match {
   MatchStatus getMatchStatus();
 
   /**
-   * 試合に参加している全プレイヤーを取得する。試合の開始前にこのメソッドを呼び出した場合、キューに参加しているプレイヤーは含まれず、空のSetを返す。
+   * 試合に参加している全プレイヤーを取得する。試合の開始前にこのメソッドを呼び出した場合、キューに参加しているプレイヤーを返す。
    *
    * @return 試合に参加しているプレイヤーのSet
    */
@@ -97,6 +97,14 @@ public interface Match {
    * @return 除外に成功した場合はtrue、キューに追加されていないなどの理由で失敗した場合はfalse
    */
   boolean removePartyFromQueue(Party party);
+
+  /**
+   * すでにキューか試合に参加しているパーティのプレイヤーが後から参加してきた場合に処理を行うメソッド
+   *
+   * @param p 後から参加してきたプレイヤー
+   * @return プレイヤーのセットアップが完了した場合はtrue、失敗した場合はfalse
+   */
+  boolean setupPartyPlayer(Player p);
 
   /**
    * プレイヤーのリスポーン地点を返す
