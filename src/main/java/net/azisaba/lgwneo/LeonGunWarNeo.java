@@ -30,6 +30,7 @@ import net.azisaba.lgwneo.redis.pubsub.PubSubHandler;
 import net.azisaba.lgwneo.sql.MySQLConnector;
 import net.azisaba.lgwneo.taskchain.BukkitTaskChainFactory;
 import net.azisaba.lgwneo.util.Chat;
+import net.azisaba.lgwneo.util.ServerTransferUtils;
 import net.azisaba.lgwneo.world.SlimeWorldManagerWorldLoader;
 import net.azisaba.lgwneo.world.map.MatchMapLoader;
 import org.bukkit.Bukkit;
@@ -62,6 +63,7 @@ public class LeonGunWarNeo extends JavaPlugin {
     taskChainFactory = BukkitTaskChainFactory.create(this);
 
     Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+    ServerTransferUtils.init(this);
 
     // Configを読み込む
     saveDefaultConfig();
