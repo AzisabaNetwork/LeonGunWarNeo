@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
@@ -80,6 +81,21 @@ public class GlobalMatchListener implements Listener {
     if (!(e.getDamager() instanceof Firework)) {
       return;
     }
+    e.setCancelled(true);
+  }
+
+  /*
+   * 試合開始前に受けたダメージを無効化するListener
+   */
+  @EventHandler
+  public void onDamage(EntityDamageEvent e) {
+    String worldName = e.getEntity().getWorld().getName();
+
+    Match match = plugin.getMatchOrganizer().getMatch(worldName);
+    if (match == null || match.getMatchStatus() == MatchStatus.PLAYING) {
+      return;
+    }
+
     e.setCancelled(true);
   }
 }
