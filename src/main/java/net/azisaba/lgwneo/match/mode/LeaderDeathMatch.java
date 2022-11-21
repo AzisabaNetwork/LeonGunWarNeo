@@ -231,7 +231,14 @@ public class LeaderDeathMatch implements Match {
       }
 
       Bukkit.getScheduler()
-          .runTaskLater(plugin, () -> ServerTransferUtils.sendToLobby(getParticipatePlayers()),
+          .runTaskLater(plugin, () -> {
+                boolean success = ServerTransferUtils.sendToLobby(getParticipatePlayers());
+                if (!success) {
+                  for (Player p : getParticipatePlayers()) {
+                    p.sendMessage(Chat.f("{0} &cロビーへのTPに失敗しました", LeonGunWarNeo.getChatPrefix()));
+                  }
+                }
+              },
               20L * waitSeconds);
     };
 
