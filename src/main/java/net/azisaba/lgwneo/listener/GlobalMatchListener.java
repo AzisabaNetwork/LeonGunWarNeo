@@ -21,6 +21,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 
 /**
  * 全モードに適用するリスナーを登録するクラス
@@ -167,6 +168,20 @@ public class GlobalMatchListener implements Listener {
     if (p.getGameMode() == GameMode.CREATIVE) {
       return;
     }
+    e.setCancelled(true);
+  }
+
+  /*
+   * 試合ワールドの天候変化を無効化するListener
+   */
+  @EventHandler
+  public void onWeatherChange(WeatherChangeEvent e) {
+    String worldName = e.getWorld().getName();
+    Match match = plugin.getMatchOrganizer().getMatch(worldName);
+    if (match == null) {
+      return;
+    }
+
     e.setCancelled(true);
   }
 }
