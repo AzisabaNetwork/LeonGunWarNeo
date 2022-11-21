@@ -6,6 +6,7 @@ import net.azisaba.lgwneo.LeonGunWarNeo;
 import net.azisaba.lgwneo.match.component.MatchStatus;
 import net.azisaba.lgwneo.match.mode.Match;
 import net.azisaba.lgwneo.util.Chat;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
@@ -13,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -129,5 +132,41 @@ public class GlobalMatchListener implements Listener {
     }
 
     e.getPlayer().teleport(queueSpawn);
+  }
+
+  /*
+   * 試合に参加しているプレイヤーがブロックを破壊することを禁止するListener
+   */
+  @EventHandler
+  public void onBlockBreak(BlockBreakEvent e) {
+    Player p = e.getPlayer();
+    String worldName = p.getWorld().getName();
+    Match match = plugin.getMatchOrganizer().getMatch(worldName);
+
+    if (match == null) {
+      return;
+    }
+    if (p.getGameMode() == GameMode.CREATIVE) {
+      return;
+    }
+    e.setCancelled(true);
+  }
+
+  /*
+   * 試合に参加しているプレイヤーがブロックを設置することを禁止するListener
+   */
+  @EventHandler
+  public void onBlockPlace(BlockPlaceEvent e) {
+    Player p = e.getPlayer();
+    String worldName = p.getWorld().getName();
+    Match match = plugin.getMatchOrganizer().getMatch(worldName);
+
+    if (match == null) {
+      return;
+    }
+    if (p.getGameMode() == GameMode.CREATIVE) {
+      return;
+    }
+    e.setCancelled(true);
   }
 }
