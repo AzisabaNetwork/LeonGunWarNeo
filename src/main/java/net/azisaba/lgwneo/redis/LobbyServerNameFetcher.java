@@ -76,7 +76,7 @@ public class LobbyServerNameFetcher {
   }
 
   /**
-   * ロビーサーバー名の情報を更新する
+   * ロビーサーバー名の情報を更新する。無効な古いデータがあった場合は削除する
    */
   private void refresh() {
     lock.lock();
@@ -93,6 +93,9 @@ public class LobbyServerNameFetcher {
         for (String serverUniqueId : lobbyMap.keySet()) {
           if (serverKeys.contains(RedisKeys.UNIQUE_SERVER_ID_PREFIX.getKey() + serverUniqueId)) {
             lobbies.add(lobbyMap.get(serverUniqueId));
+          } else {
+            // 起動していないロビーのデータは削除する
+            jedis.hdel(RedisKeys.LOBBY_MAP.getKey(), serverUniqueId);
           }
         }
       }
