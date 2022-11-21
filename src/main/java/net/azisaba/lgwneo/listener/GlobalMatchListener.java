@@ -1,10 +1,12 @@
 package net.azisaba.lgwneo.listener;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import net.azisaba.lgwneo.LeonGunWarNeo;
 import net.azisaba.lgwneo.match.component.MatchStatus;
 import net.azisaba.lgwneo.match.mode.Match;
 import net.azisaba.lgwneo.util.Chat;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -15,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
  * 全モードに適用するリスナーを登録するクラス
@@ -97,5 +100,34 @@ public class GlobalMatchListener implements Listener {
     }
 
     e.setCancelled(true);
+  }
+
+  /*
+   * 試合開始前の浮島から脱走することを防止するListener
+   */
+  @EventHandler
+  public void onMove(PlayerMoveEvent e) {
+    String worldName = e.getPlayer().getWorld().getName();
+
+    Match match = plugin.getMatchOrganizer().getMatch(worldName);
+    if (match == null || !Arrays.asList(MatchStatus.INITIALIZING, MatchStatus.WAITING,
+        MatchStatus.STARTING).contains(match.getMatchStatus())) {
+      return;
+    }
+
+    Location queueSpawn = match.getMapData().getQueueSpawn();
+    if (queueSpawn == null || !e.getPlayer().getWorld().equals(queueSpawn.getWorld())) {
+      return;
+    }
+
+    double xDistance = Math.abs(queueSpawn.getX() - e.getTo().getX());
+    double yDistance = Math.abs(queueSpawn.getY() - e.getTo().getY());
+    double zDistance = Math.abs(queueSpawn.getZ() - e.getTo().getZ());
+
+    if (xDistance < 10 && yDistance < 10 && zDistance < 10) {
+      return;
+    }
+
+    e.getPlayer().teleport(queueSpawn);
   }
 }

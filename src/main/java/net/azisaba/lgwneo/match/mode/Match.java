@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import net.azisaba.lgwneo.match.KillDeathAssistCounter;
 import net.azisaba.lgwneo.match.component.MatchStatus;
 import net.azisaba.lgwneo.party.Party;
+import net.azisaba.lgwneo.world.map.MatchMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -30,6 +31,13 @@ public interface Match {
    * @return 試合の情報
    */
   Map<String, Object> getMatchInformationAsMap();
+
+  /**
+   * 試合で使用するマップのデータを取得する
+   *
+   * @return 試合で使用するマップのデータ
+   */
+  MatchMap getMapData();
 
   /**
    * 試合を行うワールドを取得する
