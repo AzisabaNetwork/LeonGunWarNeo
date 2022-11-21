@@ -184,8 +184,12 @@ public class LeaderDeathMatchScoreboard {
     FastBoard board = fastBoardMap.get(p.getUniqueId());
     if (board == null || board.isDeleted()) {
       board = new FastBoard(p);
-      board.updateTitle(
-          Chat.f("&a{0} &dv{1}", plugin.getName(), plugin.getDescription().getVersion()));
+
+      String title = Chat.f("&a{0} &dv{1}", plugin.getName(), plugin.getDescription().getVersion());
+      if (title.length() > 32) {
+        title = Chat.f("&a{0}", plugin.getName());
+      }
+      board.updateTitle(title);
       fastBoardMap.put(p.getUniqueId(), board);
     }
     return board;
