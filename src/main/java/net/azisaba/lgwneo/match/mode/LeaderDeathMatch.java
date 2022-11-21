@@ -318,22 +318,7 @@ public class LeaderDeathMatch implements Match {
 
     // 試合を始められる環境だった場合、カウントダウンを開始する
     if (canStartMatch()) {
-      startCountdownTask.setTimeElapsedAction(
-          (time) -> {
-            if (time <= 0) {
-              startMatch();
-              return;
-            }
-
-            if (time <= 5 || time % 5 == 0) {
-              for (Player p : world.getPlayers()) {
-                p.sendMessage(
-                    Chat.f("{0}&r試合開始まであと&a{1}秒&r！", LeonGunWarNeo.getChatPrefix(), time));
-                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HAT, 1, 1);
-              }
-            }
-          });
-      startCountdownTask.startCountdown(plugin);
+      runStartCountdown();
     }
 
     return added;
@@ -357,6 +342,11 @@ public class LeaderDeathMatch implements Match {
     p.setGameMode(GameMode.SURVIVAL);
     p.setHealth(20);
     p.setFoodLevel(25);
+
+    // 試合を始められる環境だった場合、カウントダウンを開始する
+    if (canStartMatch()) {
+      runStartCountdown();
+    }
 
     return true;
   }
@@ -484,6 +474,25 @@ public class LeaderDeathMatch implements Match {
   private boolean canStartMatch() {
     return getQueueingParties().stream().mapToLong(Party::getOnlineCount).sum() >= 2
         && getQueueingParties().size() >= 2;
+  }
+
+  private void runStartCountdown() {
+    startCountdownTask.setTimeElapsedAction(
+        (time) -> {
+          if (time <= 0) {
+            startMatch();
+            return;
+          }
+
+          if (time <= 5 || time % 5 == 0) {
+            for (Player p : world.getPlayers()) {
+              p.sendMessage(
+                  Chat.f("{0}&r試合開始まであと&a{1}秒&r！", LeonGunWarNeo.getChatPrefix(), time));
+              p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HAT, 1, 1);
+            }
+          }
+        });
+    startCountdownTask.startCountdown(plugin);
   }
 
   /**
