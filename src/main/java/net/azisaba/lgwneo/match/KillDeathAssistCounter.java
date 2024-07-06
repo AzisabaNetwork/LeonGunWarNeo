@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
+import net.azisaba.lgwneo.match.mode.Match;
 
 /**
  * プレイヤーの1試合でのキル数デス数アシスト数を記録するクラス
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public class KillDeathAssistCounter {
+
+  private final Match match;
 
   private final HashMap<UUID, AtomicInteger> kills = new HashMap<>();
   private final HashMap<UUID, AtomicInteger> deaths = new HashMap<>();
@@ -27,6 +30,7 @@ public class KillDeathAssistCounter {
    */
   public void addKills(UUID uuid) {
     kills.computeIfAbsent(uuid, k -> new AtomicInteger()).incrementAndGet();
+    match.getKillStreaks().add(uuid);
   }
 
   /**
@@ -62,8 +66,10 @@ public class KillDeathAssistCounter {
    *
    * @param uuid デス数を追加するプレイヤーのUUID
    */
-  public void addDeaths(UUID uuid) {
+  public void addDeaths(UUID uuid, UUID killer) {
     deaths.computeIfAbsent(uuid, k -> new AtomicInteger()).incrementAndGet();
+    match.getKillStreaks().removedBy(uuid, killer);
+    match.getAssistStreaks().removedBy(uuid);
   }
 
   /**
@@ -73,6 +79,7 @@ public class KillDeathAssistCounter {
    */
   public void addAssists(UUID uuid) {
     assists.computeIfAbsent(uuid, k -> new AtomicInteger()).incrementAndGet();
+    match.getAssistStreaks().add(uuid);
   }
 
   /**

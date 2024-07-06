@@ -7,6 +7,10 @@ import net.azisaba.lgwneo.redis.data.RedisConnectionData;
 import net.azisaba.lgwneo.sql.MySQLConnectionData;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Getter
 @RequiredArgsConstructor
 public class LeonGunWarNeoConfig {
@@ -17,6 +21,12 @@ public class LeonGunWarNeoConfig {
   private MySQLConnectionData mySQLConnectionData;
 
   private String serverName;
+
+  private Map<Integer, Map.Entry<List<String>, List<String>>> streaks;
+  private Map<Integer, Map.Entry<List<String>, List<String>>> killLevels;
+  private String removed;
+
+  private Map<Integer, Map.Entry<List<String>, List<String>>> assistLevels;
 
   /**
    * Configを読み込みます
@@ -54,6 +64,50 @@ public class LeonGunWarNeoConfig {
             mySQLHostname, mySQLPort, mySQLUsername, mySQLPassword, mySQLDatabase);
 
     serverName = conf.getString("server-name");
+
+    streaks = new HashMap<>();
+    conf.getConfigurationSection("streaks").getValues(false).keySet().stream()
+            .map(Integer::valueOf)
+            .collect(
+                    Collectors.toMap(
+                            Function.identity(),
+                            count -> {
+                              List<String> messages = conf.getStringList("streaks." + count + ".messages");
+                              List<String> commands = conf.getStringList("streaks." + count + ".commands");
+                              return new AbstractMap.SimpleEntry<>(messages, commands);
+                            }))
+            .forEach(streaks::put);
+    streaks = Collections.unmodifiableMap(streaks);
+
+    killLevels = new HashMap<>();
+    conf.getConfigurationSection("levels").getValues(false).keySet().stream()
+            .map(Integer::valueOf)
+            .collect(
+                    Collectors.toMap(
+                            Function.identity(),
+                            count -> {
+                              List<String> messages = conf.getStringList("killLevels." + count + ".messages");
+                              List<String> commands = conf.getStringList("killLevels." + count + ".commands");
+                              return new AbstractMap.SimpleEntry<>(messages, commands);
+                            }))
+            .forEach(killLevels::put);
+    killLevels = Collections.unmodifiableMap(killLevels);
+
+    removed = conf.getString("removed");
+
+    assistLevels = new HashMap<>();
+    conf.getConfigurationSection("levels").getValues(false).keySet().stream()
+            .map(Integer::valueOf)
+            .collect(
+                    Collectors.toMap(
+                            Function.identity(),
+                            count -> {
+                              List<String> messages = conf.getStringList("assistLevels." + count + ".messages");
+                              List<String> commands = conf.getStringList("assistLevels." + count + ".commands");
+                              return new AbstractMap.SimpleEntry<>(messages, commands);
+                            }))
+            .forEach(assistLevels::put);
+    assistLevels = Collections.unmodifiableMap(assistLevels);
     return this;
   }
 }

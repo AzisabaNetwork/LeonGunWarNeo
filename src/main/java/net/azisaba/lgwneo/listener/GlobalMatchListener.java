@@ -67,7 +67,7 @@ public class GlobalMatchListener implements Listener {
     // キル数とデス数をカウントする
     if (match.getKillDeathAssistCounter() != null) {
       match.getKillDeathAssistCounter().addKills(killer.getUniqueId());
-      match.getKillDeathAssistCounter().addDeaths(e.getEntity().getUniqueId());
+      match.getKillDeathAssistCounter().addDeaths(e.getEntity().getUniqueId(), killer.getUniqueId());
     }
   }
 

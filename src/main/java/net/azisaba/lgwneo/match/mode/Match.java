@@ -3,7 +3,10 @@ package net.azisaba.lgwneo.match.mode;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+
+import net.azisaba.lgwneo.match.AssistStreaks;
 import net.azisaba.lgwneo.match.KillDeathAssistCounter;
+import net.azisaba.lgwneo.match.KillStreaks;
 import net.azisaba.lgwneo.match.component.MatchStatus;
 import net.azisaba.lgwneo.party.Party;
 import net.azisaba.lgwneo.world.map.MatchMap;
@@ -128,4 +131,9 @@ public interface Match {
    * @return 試合で使用しているKillDeathAssistCounterインスタンス
    */
   KillDeathAssistCounter getKillDeathAssistCounter();
+
+  void broadcastMessage(String message);
+
+  KillStreaks getKillStreaks();
+  AssistStreaks getAssistStreaks();
 }

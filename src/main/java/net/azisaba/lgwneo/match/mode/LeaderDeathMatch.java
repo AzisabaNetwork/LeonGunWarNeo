@@ -21,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.azisaba.lgwneo.LeonGunWarNeo;
 import net.azisaba.lgwneo.animation.MatchResultAnimation;
+import net.azisaba.lgwneo.match.AssistStreaks;
 import net.azisaba.lgwneo.match.KillDeathAssistCounter;
+import net.azisaba.lgwneo.match.KillStreaks;
 import net.azisaba.lgwneo.match.component.MatchResult;
 import net.azisaba.lgwneo.match.component.MatchStatus;
 import net.azisaba.lgwneo.match.component.MatchTeam;
@@ -72,6 +74,7 @@ public class LeaderDeathMatch implements Match {
   private final HashMap<MatchTeam, Set<Player>> teamPlayerMap = new HashMap<>();
   private final HashMap<MatchTeam, Set<UUID>> offlineTeamPlayerMap = new HashMap<>();
   private final Set<Party> queueingParties = new HashSet<>();
+  @Getter
   private final HashMap<MatchTeam, UUID> teamLeaderMap = new HashMap<>();
 
   @Getter
@@ -80,7 +83,7 @@ public class LeaderDeathMatch implements Match {
   private final FlexibleCountdownTask matchCountdownTask = new FlexibleCountdownTask(600);
 
   @Getter
-  private final KillDeathAssistCounter killDeathAssistCounter = new KillDeathAssistCounter();
+  private final KillDeathAssistCounter killDeathAssistCounter = new KillDeathAssistCounter(this);
 
   @Getter
   private final HashMap<MatchTeam, AtomicInteger> scoreMap = new HashMap<>();
@@ -98,6 +101,11 @@ public class LeaderDeathMatch implements Match {
   private boolean privateMatch = true; // fail safe
 
   private final HashMap<MatchTeam, ItemStack> chestPlateMap = new HashMap<>();
+
+  @Getter
+  private final KillStreaks killStreaks = new KillStreaks(plugin);
+  @Getter
+  private final AssistStreaks assistStreaks = new AssistStreaks(plugin);
 
   @Override
   public Map<String, Object> getMatchInformationAsMap() {
@@ -365,6 +373,11 @@ public class LeaderDeathMatch implements Match {
     }
     // ワールドも違うのであれば、全く無関係な試合である可能性が高いためnullを返す
     return null;
+  }
+
+  @Override
+  public void broadcastMessage(String message){
+    this.getParticipatePlayers().forEach(Player::sendMessage);
   }
 
   /**
