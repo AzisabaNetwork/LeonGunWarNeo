@@ -59,6 +59,7 @@ import org.bukkit.scoreboard.Team.OptionStatus;
 @RequiredArgsConstructor
 public class LeaderDeathMatch implements Match {
 
+  @Getter
   private final LeonGunWarNeo plugin;
   @Getter
   private final String matchId;
@@ -103,9 +104,9 @@ public class LeaderDeathMatch implements Match {
   private final HashMap<MatchTeam, ItemStack> chestPlateMap = new HashMap<>();
 
   @Getter
-  private final KillStreaks killStreaks = new KillStreaks(plugin);
+  private final KillStreaks killStreaks = new KillStreaks(this);
   @Getter
-  private final AssistStreaks assistStreaks = new AssistStreaks(plugin);
+  private final AssistStreaks assistStreaks = new AssistStreaks(this);
 
   @Override
   public Map<String, Object> getMatchInformationAsMap() {

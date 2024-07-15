@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class KillStreaks {
 
-    private final LeonGunWarNeo plugin;
+    private final Match match;
 
     private final Map<UUID, AtomicInteger> streaksMap = new HashMap<>();
 
@@ -26,17 +26,16 @@ public class KillStreaks {
         Player killer = Bukkit.getPlayer(killerU);
         int streaks = get(uuid).get();
         int minStreaks =
-                plugin.getLeonGunWarNeoConfig().getStreaks().entrySet().stream()
+                match.getPlugin().getLeonGunWarNeoConfig().getStreaks().entrySet().stream()
                         .sorted(Map.Entry.comparingByKey())
                         .map(Map.Entry::getKey)
                         .findFirst()
                         .orElse(-1);
 
         if (killer != null && streaks >= minStreaks) {
-            Match match = plugin.getMatchOrganizer().getMatchFromPlayer(uuid);
             match.broadcastMessage(
                     Chat.f(
-                            plugin.getLeonGunWarNeoConfig().getRemoved(),
+                            match.getPlugin().getLeonGunWarNeoConfig().getRemoved(),
                             LeonGunWarNeo.getChatPrefix(),
                             killer.getDisplayName(),
                             player.getDisplayName()
@@ -54,14 +53,14 @@ public class KillStreaks {
 
     private void giveRewards(int streaks, UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        plugin.getLeonGunWarNeoConfig().getStreaks().entrySet().stream()
+        match.getPlugin().getLeonGunWarNeoConfig().getStreaks().entrySet().stream()
                 .filter(entry -> streaks == entry.getKey())
                 .map(Map.Entry::getValue)
                 .map(Map.Entry::getValue)
                 .flatMap(List::stream)
                 .map(command -> Chat.f(command, player.getName()))
                 .forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
-        plugin.getLeonGunWarNeoConfig().getKillLevels().entrySet().stream()
+        match.getPlugin().getLeonGunWarNeoConfig().getKillLevels().entrySet().stream()
                 .filter(entry -> streaks % entry.getKey() == 0)
                 .map(Map.Entry::getValue)
                 .map(Map.Entry::getValue)
@@ -73,7 +72,6 @@ public class KillStreaks {
     public void add(UUID uuid) {
         // カウントを追加
         int streaks = get(uuid).incrementAndGet();
-        Match match = plugin.getMatchOrganizer().getMatchFromPlayer(uuid);
         Player player = Bukkit.getPlayer(uuid);
         // 報酬を付与
         giveRewards(streaks, uuid);
@@ -85,14 +83,14 @@ public class KillStreaks {
         }
 
         // キルストリークをお知らせ
-        plugin.getLeonGunWarNeoConfig().getStreaks().entrySet().stream()
+        match.getPlugin().getLeonGunWarNeoConfig().getStreaks().entrySet().stream()
                 .filter(entry -> streaks == entry.getKey())
                 .map(Map.Entry::getValue)
                 .map(Map.Entry::getKey)
                 .flatMap(List::stream)
                 .map(message -> Chat.f(message, LeonGunWarNeo.getChatPrefix(), player.getDisplayName()))
                 .forEach(match::broadcastMessage);
-        plugin.getLeonGunWarNeoConfig().getKillLevels().entrySet().stream()
+        match.getPlugin().getLeonGunWarNeoConfig().getKillLevels().entrySet().stream()
                 .filter(entry -> streaks % entry.getKey() == 0)
                 .map(Map.Entry::getValue)
                 .map(Map.Entry::getKey)

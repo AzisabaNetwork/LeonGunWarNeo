@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class AssistStreaks {
 
-    private final LeonGunWarNeo plugin;
+    private final Match match;
     private final Map<UUID, AtomicInteger> streaksMap = new HashMap<>();
 
     public void removedBy(UUID uuid) {
@@ -34,16 +34,15 @@ public class AssistStreaks {
         Player player = Bukkit.getPlayer(uuid);
 
         // 報酬を付与
-        plugin.getLeonGunWarNeoConfig().getAssistLevels().entrySet().stream()
+        match.getPlugin().getLeonGunWarNeoConfig().getAssistLevels().entrySet().stream()
                 .filter(entry -> streaks % entry.getKey() == 0)
                 .map(Map.Entry::getValue)
                 .map(Map.Entry::getValue)
                 .flatMap(List::stream)
                 .map(command -> Chat.f(command, player.getName()))
                 .forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
-        Match match = plugin.getMatchOrganizer().getMatchFromPlayer(player);
         // アシストストリークをお知らせ
-        plugin.getLeonGunWarNeoConfig().getAssistLevels().entrySet().stream()
+        match.getPlugin().getLeonGunWarNeoConfig().getAssistLevels().entrySet().stream()
                 .filter(entry -> streaks % entry.getKey() == 0)
                 .map(Map.Entry::getValue)
                 .map(Map.Entry::getKey)

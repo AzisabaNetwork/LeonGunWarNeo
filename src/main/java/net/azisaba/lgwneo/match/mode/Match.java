@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import net.azisaba.lgwneo.LeonGunWarNeo;
 import net.azisaba.lgwneo.match.AssistStreaks;
 import net.azisaba.lgwneo.match.KillDeathAssistCounter;
 import net.azisaba.lgwneo.match.KillStreaks;
@@ -136,4 +137,6 @@ public interface Match {
 
   KillStreaks getKillStreaks();
   AssistStreaks getAssistStreaks();
+
+  LeonGunWarNeo getPlugin();
 }
